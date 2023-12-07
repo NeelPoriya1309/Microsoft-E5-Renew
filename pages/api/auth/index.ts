@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { readFileSync, writeFile } from "fs";
+import { readFileSync, writeFile, writeFileSync } from "fs";
 import path from "path";
 
 type ResponseData = {
@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function getToken() {
-    const file = path.join(process.cwd(), 'refresh-token.json');
+    const file = path.join(process.cwd(), 'tmp', 'refresh-token.json');
     const refreshTokenJSON = readFileSync(file, 'utf8');
     const { refresh_token } = JSON.parse(refreshTokenJSON);
 
@@ -88,11 +88,7 @@ async function getToken() {
 
     const newRefreshToken = { 'refresh_token': data.refresh_token };
 
-    writeFile('refresh-token.json', JSON.stringify(newRefreshToken), err => {
-        if (err) {
-            throw err;
-        }
-    });
+    writeFileSync(file, JSON.stringify(newRefreshToken));
 
     return data;
 }
