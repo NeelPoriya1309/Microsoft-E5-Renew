@@ -5,10 +5,10 @@ type ResponseData = {
     message: string
 }
 
-export async function GET(req: NextApiRequest) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const response: ResponseData = {
         message: 'John Doe'
     };
 
-    return NextResponse.json(response);
+    return res.status(200).json(response);
 }

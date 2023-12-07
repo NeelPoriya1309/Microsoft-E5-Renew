@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { NextResponse } from "next/server";
-
-import refreshTokenJSON from '../../../refresh-token.json';
 import axios from "axios";
-import { writeFile } from "fs";
+import { readFileSync, writeFile } from "fs";
+import path from "path";
 
 type ResponseData = {
     access_token: string,
@@ -66,9 +64,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function getToken() {
+    const file = path.join(process.cwd(), 'refresh-token.json');
+    const refreshTokenJSON = readFileSync(file, 'utf8');
+    const { refresh_token } = JSON.parse(refreshTokenJSON);
+
     const body = {
         'grant_type': 'refresh_token',
-        'refresh_token': refreshTokenJSON.refresh_token,
+        'refresh_token': refresh_token,
         'client_id': process.env.CLIENT_ID,
         'client_secret': encodeURIComponent(process.env.CLIENT_SECRET!),
         'redirect_uri': 'http://localhost:53682/'
